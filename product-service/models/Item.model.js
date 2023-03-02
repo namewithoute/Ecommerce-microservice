@@ -8,5 +8,9 @@ var itemSchema=mongoose.Schema({
     price:Number,
     description:String,
     img:[String],
+    itemOptions:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'item_option'
+    }]
 })
 module.exports=mongoose.model('item',itemSchema)

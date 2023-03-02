@@ -94,7 +94,7 @@ $('.input-group').on('click', '.button-minus', function (e) {
 
 var root_color = document.getElementById('size')
 var item = JSON.parse(localStorage.getItem('item'))
-var sizeList = item.classify.map((e) => {
+var sizeList = item.itemOptions.map((e) => {
   return e.size
 }).filter((value, index, self) => {
   return self.indexOf(value) == index;
@@ -126,7 +126,7 @@ document.getElementById('description').innerText=item.description
 
 var rootSize = document.getElementById('color')
 
-var colorList = item.classify.map((e) => {
+var colorList = item.itemOptions.map((e) => {
   return e.color
 }).filter((value, index, self) => {
   return self.indexOf(value) == index

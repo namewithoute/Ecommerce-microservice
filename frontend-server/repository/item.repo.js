@@ -1,13 +1,26 @@
 const fetch=require('node-fetch')
-async function authRepo(email,password){
-    const getRefresh=await fetch('http://localhost:3001/auth/login', {
-        method: 'POST',
+async function itemPerPageRepo(page,accessToken){
+    const getItems=await fetch(`http://localhost:3002/product/get-all/?page=`+page, {
+        method: 'GET',
         headers: {
-            'Content-type': 'application/json'
+            'Content-type': 'application/json',
+            // 'Authorization':'Bearer '+accessToken
         },
-        body: JSON.stringify({email:email,password:password})
     })
-    const refreshToken = await getRefresh.json()
-    return refreshToken
+    const items = await getItems.json()
+    return items
 }
-module.exports=authRepo
+
+async function itemDetailRepo(itemId){
+    const getItem=await fetch(`http://localhost:3002/product/`+itemId, {
+        method: 'GET',
+        headers: {
+            'Content-type': 'application/json',
+            // 'Authorization':'Bearer '+accessToken
+        },
+    })
+    const item = await getItem.json()
+    return item
+}
+
+module.exports={itemPerPageRepo,itemDetailRepo}
