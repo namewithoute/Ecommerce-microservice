@@ -22,5 +22,18 @@ async function itemDetailRepo(itemId){
     const item = await getItem.json()
     return item
 }
+async function itemBuy(accessToken,body){
+    const reqBuy=await fetch(`http://localhost:3002/product/buy`, {
+        method: 'POST',
+        headers: {
+            'Content-type': 'application/json',
+            'Authorization':'Bearer '+accessToken
+        },
+        body:JSON.stringify(body)
+    })
+    const buy = await reqBuy.json()
+    return buy 
+}
 
-module.exports={itemPerPageRepo,itemDetailRepo}
+
+module.exports={itemPerPageRepo,itemDetailRepo,itemBuy}

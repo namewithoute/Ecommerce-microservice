@@ -15,7 +15,8 @@ fetch('https://online-gateway.ghn.vn/shiip/public-api/master-data/province', {
     })
 
 function getDistrict() {
-    var provinceID = document.getElementById('provinceSelect').value
+    var provinceID = document.getElementById('provinceSelect').value 
+    console.log(provinceID)
     fetch('https://online-gateway.ghn.vn/shiip/public-api/master-data/district', {
         method: 'POST',
         headers: {
@@ -37,7 +38,6 @@ function getWard() {
     var districtID = document.getElementById('districtSelect').value
     console.log(districtID)
     try {
-
         fetch('https://online-gateway.ghn.vn/shiip/public-api/master-data/ward', {
             method: 'POST',
             headers: {
@@ -48,6 +48,7 @@ function getWard() {
         }).then((res) => {
             return res.json()
         }).then((wards) => {
+            console.log(wards)
             renderWardOption(wards)
             // renderDistrictOption(districts)
         })
@@ -118,18 +119,21 @@ originalData.forEach((tag) => {
 async function checkIsUpdate(e) {
     //check phone is change
 
-
+    console.log('clicked')
     var dataSubmit = document.querySelectorAll('.fc')
     var submitArr = []
     var submitBody = {}
     var flag = 0
+    console.log(dataSubmit)
     dataSubmit.forEach((tag) => {
+        console.log(tag.value)
         if (tag.value == '') {
             flag = 1
             return
         }
     })
     if (flag == 1) {
+        console.log(1)
         return
     }
     dataSubmit.forEach((tag) => {
@@ -146,6 +150,7 @@ async function checkIsUpdate(e) {
 
 
     var sameArr = JSON.stringify(submitArr) === JSON.stringify(originalArr)
+    console.log(sameArr)
     if (sameArr)
         return
 

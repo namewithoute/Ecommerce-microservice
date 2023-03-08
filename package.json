@@ -4,12 +4,17 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start":"nodemon ./frontend-server/index",
+    "start-auth-service":"nodemon ./auth-service/index",
+    "start-product-service":"nodemon ./product-service/index",
+    "start-cart-service":"nodemon ./cart-service/index",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "amqplib": "^0.10.3"
+    "amqplib": "^0.10.3",
+    "autocannon": "^7.10.0"
   }
 }

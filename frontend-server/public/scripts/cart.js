@@ -6,12 +6,13 @@ const formatter = new Intl.NumberFormat('en-US', {
 
 
 
-function removeItem(id, size, color,quantity) {
+function removeItem(itemId, optionId) {
     var cart = JSON.parse(localStorage.getItem("cart"))
     var afterRemove = cart.filter((item) => {
-        return !(item.id == id && item.size == size && item.color == color)
+        return !(item._idItem == itemId && item._idOption == optionId)
     })
-    fetch(`http://localhost:3000/cart/?id=${id}&size=${size}&color=${color}`,{
+    console.log(afterRemove)
+    fetch(`http://localhost:3000/cart?itemId=${itemId}&optionId=${optionId}`,{
         method:'DELETE',
         headers:
         {
@@ -52,7 +53,7 @@ function render() {
         <div class="media d-block d-sm-flex  text-sm-left">
             <a class="cart-item-thumb mx-auto mr-sm-4" href="#"><img src="${item.img}" alt="Product"></a>
             <div class="media-body pt-3 ">
-                <h3 class="product-card-title font-weight-semibold border-0 pb-0 name-cart"><a href="/item/${item.id}" style="text-decoration:none;">${item.name}</a></h3>
+                <h3 class="product-card-title font-weight-semibold border-0 pb-0 name-cart"><a href="/item/${item._idItem}" style="text-decoration:none;">${item.name}</a></h3>
                 <div class="font-size-sm"><span class="text-muted mr-2">Size:</span class="size-cart">${item.size}</div>
                 <div class="font-size-sm"><span class="text-muted mr-2">Color:</span class="color-cart">${item.color}</div>
                 <div class="font-size-lg text-primary pt-2 price-cart">${formatter.format(item.price)}</div>
@@ -61,10 +62,10 @@ function render() {
         <div class="pt-2 pt-sm-0 pl-sm-3 mx-auto mx-sm-0 text-center text-sm-left" style="max-width: 10rem;" >
             <div class="form-group mb-2" >
                 <label for="quantity1">Quantity</label>
-                <input class="form-control form-control-sm quantity" type="number" oninput="updateQuantity(this.value,'${item.id}','${item.size}','${item.color}')" value="${item.quantity}" min="1" max="99">
+                <input class="form-control form-control-sm quantity" type="number" oninput="updateQuantity(this.value,'${item._idItem}','${item._idOption}')" value="${item.quantity}" min="1" max="99">
             </div>
         
-            <button class="btn btn-outline-danger btn-sm btn-block mb-2" type="button" onclick="removeItem('${item.id}','${item.size}','${item.color}',${item.quantity})">
+            <button class="btn btn-outline-danger btn-sm btn-block mb-2" type="button" onclick="removeItem('${item._idItem}','${item._idOption}')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2 mr-1">
                     <polyline points="3 6 5 6 21 6"></polyline>
                     <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
@@ -82,7 +83,7 @@ function render() {
 render()
 
 function clearAll(){
-    fetch('http://localhost:3000/cart/all',{
+    fetch('http://localhost:3000/cart',{
         method:"DELETE",
         headers:{
             'Content-type':'application/json'
@@ -96,16 +97,23 @@ function clearAll(){
    
 }
 
-function updateQuantity(value,id,size,color){
-    console.log(value)
+function updateQuantity(value,_itemId,_itemOption){
     
     var cart = JSON.parse(localStorage.getItem('cart'))
-    var update=cart.map((item)=>{
-        if(item.id==id && item.size==size && item.color == color){
+    var updateFE=cart.map((item)=>{
+        if(item._idItem==_itemId && item._idOption==_itemOption){
             item.quantity=parseInt(value)
         }
         return item
     })
+
+    var update=cart.filter((item)=>{
+        if(item._idItem==_itemId && item._idOption==_itemOption){
+            item.quantity=parseInt(value)
+            return {_id:item._idItem,_idOption: item._idOption,quantity:item.quantity}
+        }
+    })
+    console.log(update)
     fetch('http://localhost:3000/cart',{
         method:'PUT',
         headers:
@@ -117,7 +125,7 @@ function updateQuantity(value,id,size,color){
         return res.json()
     }).then((data)=>{
         if(data.status==1){
-            localStorage.setItem('cart',JSON.stringify(update))
+            localStorage.setItem('cart',JSON.stringify(updateFE))
             render()
         }
     })

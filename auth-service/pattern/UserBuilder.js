@@ -2,6 +2,7 @@ const User = require('../models/User.model')
 
 function UserBuider() {
     this.user = new User()
+    // this.user.address=
     this.setEmail = function (email) {
         this.user.email = email;
         return this;
@@ -50,7 +51,7 @@ function UserBuider() {
         this.user.dob = dob;
         return this;
     }
-
+  
     this.setIsVerify = function (isVerify) {
         this.user.isVerify = isVerify;
         return this;

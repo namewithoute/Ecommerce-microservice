@@ -116,6 +116,7 @@ sizeList.forEach((s, index) => {
 })
 var addclass = 'bounder-color';
 var $cols = $('.size-option').click(function (e) {
+  disable_btn({size:this.dataset.sizeOption})
   $cols.removeClass(addclass);
   $cols.removeClass('size');
   $(this).addClass(addclass)
@@ -144,7 +145,8 @@ colorList.forEach((c) => {
 
 
 var $cols2 = $('.color-option').click(function (e) {
-  console.log($cols2)
+  disable_btn({color:this.dataset.colorOption})
+
   $cols2.removeClass(addclass);
   $cols2.removeClass('color');
 
@@ -156,14 +158,14 @@ var $cols2 = $('.color-option').click(function (e) {
 
 
 function addToCart() {
-
-  
-
   var itemInfo = JSON.parse(localStorage.getItem('item'))
+  console.log(itemInfo)
   var quantity = document.getElementById('value-quantity').value
   quantity = parseInt(quantity)
   console.log(quantity)
-  var { id, name, price, img,volume } = itemInfo
+  var { itemId,_id, name, price, img,volume } = itemInfo
+
+
   var size, color
   var colorOption = document.querySelector('.color')
   var sizeOption = document.querySelector('.size')
@@ -182,11 +184,16 @@ function addToCart() {
   }
   size = sizeOption.dataset.sizeOption
   color = colorOption.dataset.colorOption
+  var idItemOption = itemInfo.itemOptions.filter((item)=>{
+    if(item.color==color && item.size==size){
+      return item
+    }
+  })[0]
 
   // var cartInfo = localStorage.getItem('cart')
   // cartInfo = cartInfo == null ? [] : JSON.parse(localStorage.getItem('cart'))
 
-  var cart ={id,size,color,quantity}
+  var cart ={_id,itemId,optionId:idItemOption._id,quantity}
   fetch('http://localhost:3000/cart',{
     method:'POST',
     headers:{
@@ -208,7 +215,7 @@ function addToCart() {
         $(this).alert('close');
       });
     }
-    else if(data.err=1){
+    else if(data.err==1){
       document.getElementById('alert').innerHTML = `
       <div class="alert alert-danger" id="success-alert" >
       <strong>*Please login to use service
@@ -221,6 +228,7 @@ function addToCart() {
       });
     }
   })
+
 
 
 
@@ -254,6 +262,31 @@ function addToCart() {
 //   });
 }
 
+function disable_btn(option){
+
+  var colorOrSize = option.color ? 'color' : 'size'
+  var oppositeOption = option.color ? 'size': 'color'
+  var disableInvalidBtn=document.getElementsByClassName(`${oppositeOption}-option`);
+  Array.from(disableInvalidBtn).forEach((btn)=>{
+    btn.disabled=false
+  })
+  var item =JSON.parse(localStorage.getItem('item'))
+  var validChoice= item.itemOptions.filter((item)=>{
+    if(item[colorOrSize]==option[colorOrSize]){
+      return item
+    }
+  })
+  validChoice=validChoice.map((option)=>{
+    return option[oppositeOption]
+  })
+  console.log(validChoice)
+  Array.from(disableInvalidBtn).forEach((btn)=>{
+    if(!validChoice.includes(btn.innerHTML)){
+      console.log(btn.innerHTML)
+      btn.disabled=true
+    }
+  })
+}
 
 function checkIsUpdate(e) {
   e.preventDefault()

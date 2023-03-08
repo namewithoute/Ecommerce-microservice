@@ -12,7 +12,7 @@ var { validationResult } = require('express-validator');
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 const jwt = require('jsonwebtoken')
-const bcrypt=require('bcrypt')
+const bcrypt = require('bcrypt')
 
 const PORT = process.env.PORT || 3001
 const { ACCESS_TOKEN_KEY, REFRESH_TOKEN_KEY, MONGO_URL } = process.env
@@ -27,9 +27,9 @@ app.use(express.urlencoded({ extended: false }))
 app.post('/auth/login', async (req, res) => {
     const { email, password } = req.body
     try {
-        var user = await User.findOne({ email: email})
-        var isValidPassword= await bcrypt.compare(password,user.password)
-        console.log(user,isValidPassword)
+        var user = await User.findOne({ email: email })
+        var isValidPassword = await bcrypt.compare(password, user.password)
+        console.log(user, isValidPassword)
     }
     catch (e) {
         return res.status(401).json({ 'status': 400, message: 'Đã có lỗi xảy ra vui lòng refresh lại trang' })
@@ -50,6 +50,48 @@ app.post('/auth/login', async (req, res) => {
     }
     return res.status(401).json({ 'status': 401, message: 'Tài khoản hoặc mật khẩu không đúng vui lòng kiểm tra lại!' })
 })
+
+app.get('/user/get-info', (req, res) => {
+    const accessToken = req.headers.authorization.split(' ')[1]
+    jwt.verify(accessToken, ACCESS_TOKEN_KEY, async function (err, decoded) {
+        if (err) {
+            console.log(err)
+            return res.json({ message: 'invalid token' })
+        }
+        else {
+            var user = await User.findOne({ email: decoded.email }).populate('address')
+            var sendToClientInfo = { firstName: user.firstName, lastName: user.lastName, gender: user.gender, phone: user.phone, address: user.address, email: user.email, dob: user.dob }
+            return res.status(200).json(sendToClientInfo)
+        }
+    })
+})
+
+app.put('/user/update', (req, res) => {
+    const accessToken = req.headers.authorization.split(' ')[1]
+    jwt.verify(accessToken, ACCESS_TOKEN_KEY, async function (err, decoded) {
+        if (err) {
+            console.log(err)
+            return res.json({ message: 'invalid token' })
+        }
+        else {
+            const { dataUpdate } = req.body
+            var addressBuilder = new AddressBuilder()
+            var addressBuild = addressBuilder.setProvince(dataUpdate.province.name, dataUpdate.province.ID)
+                .setDistrict(dataUpdate.district.name, dataUpdate.district.ID)
+                .setWard(dataUpdate.ward.name, dataUpdate.ward.ID)
+                .setSpecify(dataUpdate.specify).build()
+            // var user = await User.updateOne({ email: decoded.email, })
+            // var sendToClientInfo = { firstName: user.firstName, lastName: user.lastName, gender: user.gender, phone: user.phone, address: user.addresses, email: user.email, dob: user.dob }
+            // return res.status(200).json(sendToClientInfo)
+            if(addressBuild.province && addressBuild.district && addressBuild.ward ){
+                var saveToDB= await addressBuild.save()                
+            }
+            var update = await User.findOneAndUpdate({email:decoded.email},{firstName:dataUpdate.firstName,lastName:dataUpdate.lastName,phone:dataUpdate.phone,gender:dataUpdate.gender,address:saveToDB._id})
+            return res.json({'status':1,message:'Update success'})
+        }
+    })
+})
+
 
 app.get('/auth/access-token', (req, res) => {
     const refreshToken = req.headers.authorization.split(' ')[1]
@@ -73,8 +115,8 @@ app.post('/auth/register', validateRegisterUser(), async (req, res) => {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
         console.log(errors)
-        const {email,phone,firstName,lastName,gender,dob}=req.body
-        return res.status(400).json({ 'status': 400, message: 'Error validation fields', errors: errors.errors,data:{email,phone,firstName,lastName,gender,dob}})
+        const { email, phone, firstName, lastName, gender, dob } = req.body
+        return res.status(400).json({ 'status': 400, message: 'Error validation fields', errors: errors.errors, data: { email, phone, firstName, lastName, gender, dob } })
     }
     const {
         email,
@@ -84,6 +126,7 @@ app.post('/auth/register', validateRegisterUser(), async (req, res) => {
         phone,
         gender,
         dob,
+
     } = req.body
     var user = new UserBuilder()
         .setEmail(email)
@@ -98,9 +141,9 @@ app.post('/auth/register', validateRegisterUser(), async (req, res) => {
         var addNewUser = await user.save()
     }
     catch (e) {
-        return res.status(400).json({ 'status': 400, message: 'Register failed please try again'})
+        return res.status(400).json({ 'status': 400, message: 'Register failed please try again' })
     }
-    return res.status(200).json({'status':200,message:'Create new account success'})
+    return res.status(200).json({ 'status': 200, message: 'Create new account success' })
 })
 
 app.listen(PORT, () => {

@@ -6,8 +6,11 @@ const homepageRouter=require('./routes/homepage.router')
 const profileRouter=require('./routes/profile.router')
 const getAccessRouter=require('./routes/getAccessToken.router')
 const itemDetailRouter=require('./routes/itemDetail.router')
+const cartRouter=require('./routes/cart.router')
+const checkoutRouter=require('./routes/checkout.router')
 const cookieParser=require('cookie-parser')
 const session=require('express-session')
+require('./config/producer.config').getConnection()
 require('dotenv').config()
 const PORT= process.env.PORT
 
@@ -33,9 +36,12 @@ app.use((req,res,next)=>{
 
 app.use('/',homepageRouter)
 app.use('/item',itemDetailRouter)
+app.use('/profile',profileRouter)
+app.use('/cart',cartRouter)
 app.use('/login',loginRouter)
 app.use('/register',registerRoute)
-app.use('/profile',profileRouter)
+app.use('/checkout',checkoutRouter)
+// app.use('/profile',profileRouter)
 app.use('/refresh-token',getAccessRouter)
 app.listen(PORT,function(){
     console.log(`ecommerce project listen at port ${PORT}`)

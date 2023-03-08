@@ -9,6 +9,7 @@ var userShema= mongoose.Schema({
     lastName:String,
     status:{type:Boolean,default:true},
     gender:Number,
+    address:{type:mongoose.Schema.Types.ObjectId, ref:'address',default:null},
     role:{type:Number,default:1},
     dob:Date,
     isVerify:{type:Boolean,default:false},

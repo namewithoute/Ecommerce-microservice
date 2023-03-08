@@ -144,12 +144,12 @@
                                 <select class="form-control fc" aria-label="Default select example" id="inputGender"
                                     name="gender">
                                     <option selected value="<%=user.gender%>">
-                                        <%=user.gender%>
+                                        <%=user.gender ==1  ? 'Male' :'Female'%>
                                     </option>
-                                    <%if(user.gender=='male'){%>
-                                        <option value="female">female</option>
+                                    <%if(user.gender==1){%>
+                                        <option value="0">Female</option>
                                         <%}else{%>
-                                            <option value="male">male</option>
+                                            <option value="1">Male</option>
                                             <%}%>
                                 </select>
                             </div>
@@ -174,16 +174,16 @@
                         </div>
                         <!-- Form Row-->
                         <div class="row gx-3 mb-3">
-                            <!-- Form Group (phone number)-->
                             <div class="col-md-6">
                                 <label class="small mb-1" for="city">City/Province</label>
-                                <!-- <input class="form-control fc" id="inputPhone" type="text"
-                                        placeholder="Enter your city" name="city" value="<%=user.address.province.name%>"> -->
+                               
                                 <select class="form-control fc" aria-label="Default select example" id="provinceSelect"
                                     name="province" onchange="onchangeProvince()">
+                                    <%if(user.address){%>
                                     <option selected value="<%=user.address.province.ID%>">
                                         <%=user.address.province.name%>
                                     </option>
+                                    <%}%>
                                 </select>
 
                             </div>
@@ -192,9 +192,11 @@
                                 <label class="small mb-1" for="district">District</label>
                                 <select class="form-control fc" aria-label="Default select example" id="districtSelect"
                                     name="district" onchange="onchangeDistrict()">
+                                    <%if(user.address){%>
                                     <option selected value="<%=user.address.district.ID%>">
                                         <%=user.address.district.name%>
                                     </option>
+                                    <%}%>
                                 </select>
                             </div>
                         </div>
@@ -204,17 +206,26 @@
                                 <label class="small mb-1" for="inputPhone">Ward</label>
                                 <select class="form-control fc" aria-label="Default select example" id="wardSelect"
                                     name="ward">
+                                    <%if(user.address){%>
                                     <option selected value="<%=user.address.ward.ID%>">
                                         <%=user.address.ward.name%>
                                     </option>
+                                    <%}%>
+
                                 </select>
                             </div>
                             <!-- Form Group (birthday)-->
                             <div class="col-md-6">
                                 <label class="small mb-1" for="house-number">Address</label>
+                                <%if(user.address){%>
                                 <input class="form-control fc" id="house-number" type="text"
                                     placeholder="Enter your house number" name="specify"
                                     value="<%=user.address.specify%>">
+                                    <%}else{%>
+                                        <input class="form-control fc" id="house-number" type="text"
+                                        placeholder="Enter your house number" name="specify"
+                                    >
+                                        <%}%>
                             </div>
                         </div>
                         <!-- Save changes button-->

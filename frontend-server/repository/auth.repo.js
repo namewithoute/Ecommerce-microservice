@@ -34,4 +34,31 @@ async function registerRepo(data){
     return status
 }
 
-module.exports={getRefreshRepo,getAccessRepo,registerRepo}
+async function getUserInformation(accessToken){
+    const getAccess=await fetch('http://localhost:3001/user/get-info', {
+        method: 'GET',
+        headers: {
+            'Content-type': 'application/json',
+            'Authorization':`Bearer ${accessToken}`
+        },
+    })
+    const data = await getAccess.json()
+    return data
+}
+
+
+async function updateUserInformation(accessToken,data){
+    const sendUpdate=await fetch('http://localhost:3001/user/update', {
+        method: 'PUT',
+        headers: {
+            'Content-type': 'application/json',
+            'Authorization':`Bearer ${accessToken}`
+        },
+        body:JSON.stringify(data)
+    })
+    const resData = await sendUpdate.json()
+    return resData
+}
+
+
+module.exports={getRefreshRepo,getAccessRepo,registerRepo,getUserInformation,updateUserInformation}
